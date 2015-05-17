@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Class">
+      <UniqueIdentifier>{8f8bebec-57ef-480b-a206-d2975e56b573}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resouce">
+      <UniqueIdentifier>{44ee9aca-46a0-43f2-9952-bf97891640e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Souce">
+      <UniqueIdentifier>{8a00e56c-6e9c-41eb-ab78-92b12ae88f88}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
