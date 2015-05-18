@@ -10,5 +10,84 @@
     <Filter Include="Souce">
       <UniqueIdentifier>{8a00e56c-6e9c-41eb-ab78-92b12ae88f88}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Class\Application">
+      <UniqueIdentifier>{8a3e3189-3720-4c25-a503-cd780d218b95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Debug">
+      <UniqueIdentifier>{03d11e0b-c761-48a8-9d7f-924293814fa7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Light">
+      <UniqueIdentifier>{d758e6f9-d68a-49c0-b778-21c55753329b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Model">
+      <UniqueIdentifier>{fd2eac13-57ff-4e8e-bc54-02933631c637}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Texture">
+      <UniqueIdentifier>{349c76f3-2491-4cec-912f-3936e35667a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Graphic">
+      <UniqueIdentifier>{e69d1f58-3a74-4ae9-a685-91a5871ea485}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Camera">
+      <UniqueIdentifier>{7db01bbc-aec0-4e73-84a9-29904ca353e5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Lib.h">
+      <Filter>Class</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Class\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Class\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>Class\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Class\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Class\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Class\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphic.h">
+      <Filter>Class\Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Class\Model</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Application.cpp">
+      <Filter>Class\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Class\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Common.cpp">
+      <Filter>Class\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Class\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Class\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Class\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphic.cpp">
+      <Filter>Class\Graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Class\Model</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
