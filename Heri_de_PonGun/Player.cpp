@@ -11,6 +11,7 @@
 
 extern LPDIRECT3DDEVICE9 d3dDevice;
 extern LPDIRECTINPUTDEVICE8 dinputDevice;
+D3DXVECTOR3 inputState;
 
 //	コンストラクタ
 Player::Player()
@@ -127,6 +128,7 @@ void Player::Move()
 	oldPlayerRot.y = Rotation.y;
 	oldCameraRot.x = camera_Rot.x;
 
+	inputState = oldPlayerPos;
 }
 
 //	ショット
@@ -144,7 +146,7 @@ void Player::Shot()
 			bullet_Pos[i].x = oldPlayerPos.x;
 			bullet_Pos[i].z = oldPlayerPos.z;
 			bullet_Rot[i].y = oldPlayerRot.y;
-			bullet_Rot[i].x = oldCameraRot.y;
+			bullet_Rot[i].x = oldCameraRot.x;
 
 			bullet_Exist[i] = true;
 		}

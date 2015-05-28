@@ -36,7 +36,7 @@ void Bullet::Draw(D3DXVECTOR3 Pos[])
 		bulletPoint[i].pos = Pos[i];
 
 		vertex[i].pos = bulletPoint[i].pos;
-		vertex[i].size = 0.5f;
+		vertex[i].size = 0.7f;
 		vertex[i].color = 0xffffffff;
 
 	}

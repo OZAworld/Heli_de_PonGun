@@ -8,7 +8,6 @@
 #include "Lib.h"
 #include "Stage.h"
 
-
 Stage::Stage()
 {
 
@@ -40,12 +39,11 @@ void Stage::Move()
 
 void Stage::initStage()
 {
-	MinRange = D3DXVECTOR3(-300, 0, -500);
-	MaxRange = D3DXVECTOR3(300, 10, 500);
+	MinRange = D3DXVECTOR3(-250, 0, -250);
+	MaxRange = D3DXVECTOR3(250, 10, 250);
 
 	D3DXVECTOR3 range = MaxRange - MinRange;
 
-	srand((unsigned int)time(NULL));
 	for (int i = 0; i < BUBBLE_MAX; i++)
 	{
 		bubble[i].pos.x = (float)((double)rand() / RAND_MAX * range.x) + MinRange.x;
@@ -55,23 +53,31 @@ void Stage::initStage()
 
 void Stage::View()
 {
+	//	プレイヤーの座標を取得
+	extern D3DXVECTOR3 inputState;
+
 	Vertex3 *vertex = new Vertex3[BUBBLE_MAX];
 	D3DXVECTOR3 range = MaxRange - MinRange;
+	srand((unsigned int)time(NULL));
 
 	for (int i = 0; i < BUBBLE_MAX; i++)
 	{
+
 		if (bubble[i].exist == TRUE)
 		{
-			bubble[i].pos.y += rand() % 5 * 0.008f;
+			bubble[i].pos.y += rand() % 100 * 0.008f;
+			D3DXVec3Normalize(&bubble[i].accel, &D3DXVECTOR3(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 - 50));
+			bubble[i].pos.x += (bubble[i].accel.x * 0.1f);
+			bubble[i].pos.z += (bubble[i].accel.z * 0.1f);
 		}
 		vertex[i].pos = bubble[i].pos;
-		vertex[i].size = 0.9f;
+		vertex[i].size = 1.0f;
 		vertex[i].color = 0xffffffff;
 
-		if (bubble[i].pos.y > 10)
+		if (bubble[i].pos.y > 50)
 		{
-			bubble[i].pos.x = (float)((double)rand() / RAND_MAX * range.x) + MinRange.x;
-			bubble[i].pos.z = (float)((double)rand() / RAND_MAX * range.z) + MinRange.z;
+			bubble[i].pos.x = (float)((double)rand() / RAND_MAX * range.x) + MinRange.x + inputState.x;
+			bubble[i].pos.z = (float)((double)rand() / RAND_MAX * range.z) + MinRange.z + inputState.z;
 			bubble[i].pos.y = 0;
 		}
 

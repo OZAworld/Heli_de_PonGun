@@ -4,6 +4,7 @@
 *	2015/05/28		Y.Ozawa
 */
 
+#include <time.h>
 #include "Lib.h"
 #include "Enemy.h"
 
@@ -15,8 +16,8 @@ extern LPDIRECT3DDEVICE9 d3dDevice;
 Enemy::Enemy()
 {
 	enemy = new Graphic[ENEMY_MAX];
-	model = new Model("Model/alien.x");
-	texture = new Texture("Texture/GreenSkin.png");
+	model = new Model("Model/tako.x");
+	texture = new Texture("Texture/enemy2.png");
 	bullet = new Bullet();
 
 	DebugLog("ìGÇê∂ê¨ÇµÇ‹ÇµÇΩÅB\n");
@@ -34,11 +35,19 @@ Enemy::~Enemy()
 //	ìGÇÃèâä˙âª
 void Enemy::InitEnemy()
 {
+	MinRange = D3DXVECTOR3(-250, 0, -250);
+	MaxRange = D3DXVECTOR3(250, 10, 250);
+	D3DXVECTOR3 range = MaxRange - MinRange;
+
+	srand((unsigned int)time(NULL));
+
 	for (int i = 0; i < ENEMY_MAX; i++)
 	{
-		Position[i] = D3DXVECTOR3(100, 0, 0);
+		Position[i].x = (float)((double)rand() / RAND_MAX * range.x) + MinRange.x;
+		Position[i].y = 10.0f;
+		Position[i].z = (float)((double)rand() / RAND_MAX * range.z) + MinRange.z;
 		Rotation[i] = D3DXVECTOR3(0, 0, 0);
-		Scale[i] = D3DXVECTOR3(1, 1, 1);
+		Scale[i] = D3DXVECTOR3(10, 10, 10);
 
 		DebugLog("ìGÇèâä˙âªÇµÇ‹ÇµÇΩÅB\n");
 	}
@@ -59,7 +68,7 @@ void Enemy::InitBullet()
 //	âï˙èàóù
 void Enemy::Release()
 {
-	delete enemy;
+	delete[] enemy;
 	delete model;
 	delete texture;
 	delete bullet;
@@ -68,7 +77,14 @@ void Enemy::Release()
 //	ìGÇÃìÆçÏ
 void Enemy::Move()
 {
-
+	srand((unsigned int)time(NULL));
+	for (int i = 0; i < ENEMY_MAX; i++)
+	{
+		D3DXVec3Normalize(&Accel[i], &D3DXVECTOR3(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 - 50));
+		Position[i].x += Accel[i].x * 0.08f;
+		Position[i].z += Accel[i].z * 0.08f;
+		Scale[i] = D3DXVECTOR3(10, 10, 10);
+	}
 }
 
 //	ìGÇÃçUåÇ
@@ -80,5 +96,8 @@ void Enemy::Shot()
 //	ìGÇÃï`âÊ
 void Enemy::Draw()
 {
-
+	for (int i = 0; i < ENEMY_MAX; i++)
+	{
+		enemy[i].DrawModelTexture(Position[i], Rotation[i], Scale[i], *model, *texture);
+	}
 }

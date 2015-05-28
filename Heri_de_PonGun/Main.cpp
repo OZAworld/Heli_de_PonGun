@@ -7,6 +7,7 @@
 #include "Lib.h"
 #include <memory>
 #include "Player.h"
+#include "Enemy.h"
 #include "Stage.h"
 
 using namespace std;
@@ -23,6 +24,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int cmdShow)
 	unique_ptr<Application> app(new Application("ヘリでポン！ガン！！", Rect(0, 0, 800, 600), false, hInst, cmdShow));
 	unique_ptr<Light> light(new Light());
 	unique_ptr<Player> player(new Player());
+	unique_ptr<Enemy> enemy(new Enemy());
 	unique_ptr<Stage> stage(new Stage());
 
 	RECT recDisplay;
@@ -35,12 +37,25 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int cmdShow)
 
 	while (app->Loop())
 	{
-		
+		//-----------------------
+		//	プレイヤー
+		//-----------------------
 		player->Draw();
 		player->Shot();
 		player->Move();
 
+		//-----------------------
+		//	敵
+		//-----------------------
+		enemy->Draw();
+		enemy->Move();
+
+		//-----------------------
+		//	ステージ
+		//-----------------------
 		stage->View();
+
+
 		//	エスケープキーを押したらゲーム終了
 		if (GetAsyncKeyState(VK_ESCAPE))
 		{
