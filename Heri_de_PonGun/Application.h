@@ -10,61 +10,55 @@
 class Application
 {
 private:
+	HWND	hWnd;
+	char*	win_title;
+	RECT	win_rect;
+	bool	win_fullscreen;
 
-	HWND hWnd;								//	ウィンドウのハンドル
-
-	LPDIRECT3D9 direct3d;					//	Direct3Dオブジェクト
-	D3DPRESENT_PARAMETERS presentParam;		//	プレゼンテーションパラメータ
-	LPDIRECTINPUT8 directInput;				//	DirectInputオブジェクト
+	LPDIRECT3D9				direct3d;
+	D3DPRESENT_PARAMETERS	presentParam;
+	LPDIRECTINPUT8			directInput;
 
 public:
+	//デフォルトコンストラクタ
+	Application();
 
-	//	コンストラクタ
-	Application(TCHAR *wndTitle, RECT wndRect, bool fullscreen_f, HINSTANCE hInst, int cmdShow);
+	//コンストラクタ
+	Application(char* win_title, RECT win_rect, bool win_fullscreen, HINSTANCE hInst, int cmdShow);
 
-	//	デストラクタ
+
+	//デストラクタ
 	~Application();
 
-	//	アプリケーションの初期化
-	void Initialize(TCHAR *wndTitle, RECT wndRect, bool fullscreen_f, HINSTANCE hInst, int cmdShow);
+	//初期化
+	void Initialize(char* win_title, RECT win_rect, bool win_fullscreen, HINSTANCE hInst, int cmdShow);
 
-	//	アプリケーションの解放
+	//解放
 	void Release();
 
-	//	ループ処理
+	//ループ処理
 	bool Loop();
 
-	//	ウィンドウハンドルの取得
-	HWND GetWndHandle();
-
 private:
+	//ウィンドウプロシージャ
+	static LRESULT CALLBACK winProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-	//	ウィンドウプロシージャ
-	static LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	//ウィンドウの初期化
+	bool InitWindow(HINSTANCE hInst, int cmdShow);
 
-	//	ウィンドウの初期化
-	bool InitWindow(TCHAR *wndTitle, RECT wndRect, bool fullscreen_f, HINSTANCE hInst, int cmdShow);
-
-	//	Direct3Dの初期化
+	//Direct3Dの初期化
 	bool InitDirect3d();
 
-	//	プレゼンテーションパラメータの初期化
-	bool InitPresentParam(RECT wndRect, bool fullscreen_f);
+	//プレゼンテーションの初期化
+	bool InitPresentParam();
 
-	//	Direct3Dデバイスの初期化
+	//Direct3Dデバイスの初期化
 	bool InitD3dDevice();
 
-	//	DirectInputの初期化
+	//DirectInputの初期化
 	bool InitDirectInput(HINSTANCE hInst);
 
-	//	DirectInputデバイスの初期化
+	//DirectInputデバイスの初期化
 	bool InitDinputDevice();
 };
-
-
-
-
-
-
-
 

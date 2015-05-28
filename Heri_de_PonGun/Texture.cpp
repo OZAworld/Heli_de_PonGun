@@ -17,6 +17,9 @@ Texture::Texture()
 //コンストラクタ
 Texture::Texture(const TCHAR *textureFileName)
 {
+	d3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+	d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+
 	LoadTexture(textureFileName);
 }
 

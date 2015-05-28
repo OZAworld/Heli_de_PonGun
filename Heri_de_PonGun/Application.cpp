@@ -13,87 +13,125 @@ LPDIRECTINPUTDEVICE8	dinputDevice = 0;
 
 DWORD FloatToDWORD(float val){ return *((DWORD *)&val); }
 
-//	コンストラクタ
-Application::Application(TCHAR *wndTitle, RECT wndRect, bool fullscreen_f, HINSTANCE hInst, int cmdShow)
+//デフォルトコンストラクタ
+Application::Application()
 {
 	DebugLog("アプリケーションを生成しました\n");
 
-	//	アプリケーションの初期化
-	Initialize(wndTitle, wndRect, fullscreen_f, hInst, cmdShow);
+	//メモリリークを検出する
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+	//アプリケーションの初期化
+	Initialize(win_title, Rect(0, 0, 640, 480), false, nullptr, 0);
 }
 
+//コンストラクタ
+Application::Application(char* win_title, RECT win_rect, bool win_fullscreen, HINSTANCE hInst, int cmdShow)
+{
+	DebugLog("アプリケーションを生成しました\n");
+
+	//メモリリークを検出する
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+	//アプリケーションの初期化
+	Initialize(win_title, win_rect, win_fullscreen, hInst, cmdShow);
+}
+
+//デストラクタ
 Application::~Application()
 {
-	DebugLog("アプリケーションを破棄しました。\n");
+	DebugLog("アプリケーションを解放しました\n");
 
-	// アプリケーションの終了処理をする
+	//アプリケーションの終了処理
 	Release();
 }
 
-//	アプリケーションの初期化
-void Application::Initialize(TCHAR *wndTitle, RECT wndRect, bool fullscreen_f, HINSTANCE hInst, int cmdShow)
+void Application::Initialize(char* win_title, RECT win_rect, bool win_fullscreen, HINSTANCE hInst, int cmdShow)
 {
-	//	ウィンドウの初期化
-	if (!InitWindow(wndTitle, wndRect, fullscreen_f, hInst, cmdShow))
-		DebugAlert("ウィンドウを\n初期化できませんでした。");
+	//	引数をメンバー変数に保存する
+	Application::win_title = win_title;
+	Application::win_rect = win_rect;
+	Application::win_fullscreen = win_fullscreen;
 
-	//	Direct3Dの初期化
+	//ウィンドウの初期化
+	if (!InitWindow(hInst, cmdShow))
+		DebugAlert("ウィンドウを\nしょきかできませんでした");
+
+	//Direct3Dの初期化
 	if (!InitDirect3d())
-		DebugAlert("Direct3D\nを初期化できませんでした。");
+		DebugAlert("Direct3Dを\n初期化できませんでした。");
 
-	//	プレゼンテーションパラメータの初期化
-	if (!InitPresentParam(wndRect, fullscreen_f))
+	//プレゼンテーションパラメータの初期化
+	if (!InitPresentParam())
 		DebugAlert("プレゼンテーションパラメータを\n初期化できませんでした。");
 
+	//Direct3Dデバイスの初期化
 	if (!InitD3dDevice())
 		DebugAlert("Direct3Dデバイスを\n初期化できませんでした。");
+
+	//DirectInputの初期化
+	if (!InitDirectInput(hInst))
+		DebugAlert("DirectInputを\n初期化できませんでした。");
+
+	//DirectInputデバイスの初期化
+	if (!InitDinputDevice())
+		DebugAlert("DirectInputデバイスを\n初期化できませんでした。");
 
 	DebugLog("アプリケーションを初期化しました。\n");
 }
 
-//	アプリケーションの解放
+//アプリケーションの解放
 void Application::Release()
 {
-	//	デバッグビルド時に確認用のビープ音を鳴らす
-#if defined(DEBUG) | defined(_DEBUG)
+	//デバッグビルド時にビープ音を鳴らす
+#if defined (DEBUG) | defined(_DEBUG)
 	MessageBeep(MB_OK);
 #endif
 
-	//	コンソールを閉じる
+	//コンソールを閉じる
 	CloseConsole();
 
+	//モデルのテンプレートを破棄する
+	SafeRelease(d3dDevice);
 	SafeRelease(direct3d);
+	SafeRelease(directInput);
 }
 
-//	ループ処理
+//ループ処理
 bool Application::Loop()
 {
 	MSG msg;
 
+	//前のフレームの描画を終了する
+	d3dDevice->EndScene();
+
+	//前のフレームの描画を反映する
+	d3dDevice->Present(0, 0, 0, 0);
+
+	//Windowsメッセージを処理する
 	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 
+		//ウィンドウを閉じる
 		if (WM_QUIT == msg.message)
-		{
 			return false;
-		}
 	}
+
+	//画面のクリア
+	if (FAILED(d3dDevice->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 102, 204), 1.0f, 0)))
+		return false;
+
+	//今のフレームの描画を開始する
+	d3dDevice->BeginScene();
 
 	return true;
 }
 
-//	ウィンドウハンドルの取得
-HWND Application::GetWndHandle()
+//ウィンドウプロシージャ
+LRESULT CALLBACK Application::winProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	return hWnd;
-}
-
-//	ウィンドウプロシージャ
-LRESULT CALLBACK Application::WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	//	Windowからのメッセージを処理する
 	switch (msg)
 	{
 	case WM_DESTROY:
@@ -106,109 +144,107 @@ LRESULT CALLBACK Application::WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 	return 0;
 }
 
-//	ウィンドウの初期化
-bool Application::InitWindow(TCHAR *wndTitle, RECT wndRect, bool fullscreen_f, HINSTANCE hInst, int cmdShow)
+//ウィンドウの初期化
+bool Application::InitWindow(HINSTANCE hInst, int cmdShow)
 {
-	//	ウィンドウクラスの初期化
-	WNDCLASSEX winClassEx;
-	winClassEx.cbSize = sizeof(WNDCLASSEX);
-	winClassEx.style = 0;
-	winClassEx.lpfnWndProc = WinProc;
-	winClassEx.cbClsExtra = 0;
-	winClassEx.cbWndExtra = 0;
-	winClassEx.hInstance = hInst;
-	winClassEx.hIcon = LoadIcon(hInst, (LPCTSTR)IDC_ICON);
-	winClassEx.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	winClassEx.hbrBackground = nullptr;
-	winClassEx.lpszMenuName = nullptr;
-	winClassEx.lpszClassName = putf("%sWindowClass", wndTitle);
-	winClassEx.hIconSm = LoadIcon(winClassEx.hInstance, (LPCTSTR)IDC_ICON);
+	//ウィンドウクラスの初期化
+	WNDCLASSEX winClass;
+	winClass.cbSize = sizeof(WNDCLASSEX);
+	winClass.style = 0;
+	winClass.lpfnWndProc = winProc;
+	winClass.cbClsExtra = 0;
+	winClass.cbWndExtra = 0;
+	winClass.hInstance = hInst;
+	winClass.hIcon = nullptr;
+	winClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
+	winClass.hbrBackground = nullptr;
+	winClass.lpszMenuName = nullptr;
+	winClass.lpszClassName = "GameWindow";
+	winClass.hIconSm = nullptr;
 
-	//	ウィンドウクラスの登録
-	if (!RegisterClassEx(&winClassEx))
+	//ウィンドウクラスの登録
+	if (!RegisterClassEx(&winClass))
 		return false;
 
-	//	ウィンドウを作成
-	if (fullscreen_f)
+	//ウィンドウを作成
+	if (win_fullscreen)
 	{
-		// フルスクリーンモードで表示する場合は
-		// 画面いっぱいにウィンドウを広げる
-		hWnd = CreateWindow(winClassEx.lpszClassName, wndTitle, WS_OVERLAPPEDWINDOW,
-			0, 0, wndRect.right, wndRect.bottom,
+		hWnd = CreateWindow(winClass.lpszClassName, win_title, WS_OVERLAPPEDWINDOW,
+			0, 0, win_rect.right, win_rect.bottom,
 			nullptr, nullptr, hInst, nullptr);
 	}
 	else
 	{
-		// ウィンドウモードで表示する場合は
-		// デフォルトのウィンドウ位置に表示する
-		AdjustWindowRect(&wndRect, WS_OVERLAPPEDWINDOW, false);
-		hWnd = CreateWindow(winClassEx.lpszClassName, wndTitle, WS_OVERLAPPEDWINDOW,
-			CW_USEDEFAULT, CW_USEDEFAULT, wndRect.right - wndRect.left, wndRect.bottom - wndRect.top,
+		AdjustWindowRect(&win_rect, WS_OVERLAPPEDWINDOW, false);
+		hWnd = CreateWindow(winClass.lpszClassName, win_title, WS_OVERLAPPEDWINDOW,
+			CW_USEDEFAULT, CW_USEDEFAULT, win_rect.right - win_rect.left, win_rect.bottom - win_rect.top,
 			nullptr, nullptr, hInst, nullptr);
 	}
 
-	//	ウィンドウを表示する
+	if (!hWnd)
+		return false;
+
 	if (FAILED(ShowWindow(hWnd, cmdShow)))
 		return false;
 
-	//	 WM_PAINTを受け取らないようにする
 	ValidateRect(hWnd, 0);
+
 	return true;
 }
 
-//	Direct3Dの初期化
+//Direct3Dの初期化
 bool Application::InitDirect3d()
 {
-	//	Direct3D9オブジェクトの作成
+	//Direct3D9オブジェクトの作成
 	if ((direct3d = Direct3DCreate9(D3D_SDK_VERSION)) == 0)
 		return false;
 
 	return true;
 }
 
-//	プレゼンテーションパラメータの初期化
-bool Application::InitPresentParam(RECT wndRect, bool fullscreen_f)
+//プレゼンテーションパラメータの初期化
+bool Application::InitPresentParam()
 {
-	D3DDISPLAYMODE *displayMode = new D3DDISPLAYMODE();
+	D3DDISPLAYMODE displayMode;
 
-	//	現在のディスプレイモードを取得
-	if (FAILED(direct3d->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, displayMode)))
+	//現在のディスプレイモードを取得
+	if (FAILED(direct3d->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &displayMode)))
 		return false;
 
-	//	デバイスのプレゼンテーションパラメータを初期化
+	//デバイスのプレゼンテーションパラメータを初期化
 	ZeroMemory(&presentParam, sizeof(D3DPRESENT_PARAMETERS));
 	presentParam.BackBufferCount = 1;
-	if (fullscreen_f)
+	//フルスクリーンの場合
+	if (win_fullscreen)
 	{
-		//	フルスクリーンの場合
-		presentParam.Windowed = false;						//	フルスクリーン表示の設定
-		presentParam.BackBufferWidth = wndRect.right;		//	フルスクリーン時の横幅
-		presentParam.BackBufferHeight = wndRect.bottom;		//	フルスクリーン時の縦幅
+		presentParam.Windowed = false;						//フルスクリーン表示の指定
+		presentParam.BackBufferWidth = win_rect.right;		//フルスクリーン時の横幅
+		presentParam.BackBufferHeight = win_rect.bottom;	//フルスクリーン時の縦幅
 	}
 	else
 	{
-		presentParam.Windowed = true;						//	ウィンドウ内表示の指定
+		presentParam.Windowed = true;						// ウインドウ内表示の指定
 	}
-	presentParam.BackBufferFormat = displayMode->Format;	//	カラーモードの指定
+	presentParam.BackBufferFormat = displayMode.Format;	//カラーモードの指定
 	presentParam.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	presentParam.EnableAutoDepthStencil = true;				//	エラー対策
-	presentParam.AutoDepthStencilFormat = D3DFMT_D16;		//	エラー対策
+	presentParam.EnableAutoDepthStencil = true;			//エラー対策
+	presentParam.AutoDepthStencilFormat = D3DFMT_D16;		//エラー対策
 
-	delete displayMode;
 	return true;
 }
 
-//	Direct3Dデバイスの初期化
+
+//Direct3Dデバイスの初期化
 bool Application::InitD3dDevice()
 {
-	// ディスプレイアダプタを表すためのデバイスを作成
-	// 描画と頂点処理をハードウェアで行なう
+	//ディスプレイアダプタを表すためのデバイスを作成
+	//描画と頂点処理をハードウェアで行なう
 	if (FAILED(direct3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &presentParam, &d3dDevice)))
-		// 上記の設定が失敗したら
-		// 描画をハードウェアで行い、頂点処理はCPUで行なう
+		//上記の設定が失敗したら
+		//描画をハードウェアで行い、頂点処理はCPUで行なう
 		if (FAILED(direct3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &presentParam, &d3dDevice)))
-			// 上記の設定が失敗したら
-			// 描画と頂点処理をCPUで行なう
+			//上記の設定が失敗したら
+			//描画と頂点処理をCPUで行なう
 			if (FAILED(direct3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_REF, hWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &presentParam, &d3dDevice)))
 				return false;
 
@@ -227,31 +263,32 @@ bool Application::InitD3dDevice()
 	d3dDevice->SetRenderState(D3DRS_POINTSCALE_A, FloatToDWORD(0.0f));
 	d3dDevice->SetRenderState(D3DRS_POINTSCALE_B, FloatToDWORD(0.0f));
 	d3dDevice->SetRenderState(D3DRS_POINTSCALE_C, FloatToDWORD(1.0f));
+
 	return true;
 }
 
-//	DirectInputの初期化
-bool Application::InitDirectInput(HINSTANCE hInst)
+//DirectInputの初期化
+bool Application::InitDirectInput(HINSTANCE hInstance)
 {
-	//	DirectInputオブジェクトの作成
-	if (FAILED(DirectInput8Create(hInst, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr)))
+	//DirectInputオブジェクトの作成
+	if (FAILED(DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr)))
 		return false;
 
 	return true;
 }
 
-//	DirectInputデバイスの初期化
+//DirectInputデバイスの初期化
 bool Application::InitDinputDevice()
 {
-	//	DirectInputデバイスを作成
+	//DirectInputデバイスを作成
 	if (FAILED(directInput->CreateDevice(GUID_SysMouse, &dinputDevice, nullptr)))
 		return false;
 
-	//	データフォーマットを設定
+	//データフォーマットを設定
 	if (FAILED(dinputDevice->SetDataFormat(&c_dfDIMouse2)))
 		return false;
 
-	//	協調モードを設定
+	//協調モードを設定
 	if (FAILED(dinputDevice->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND)))
 		return false;
 
@@ -265,15 +302,37 @@ bool Application::InitDinputDevice()
 
 	if (FAILED(dinputDevice->SetProperty(DIPROP_AXISMODE, &diprop.diph)))
 	{
-		MessageBox(NULL, "設定の失敗", "Direct Input Error", MB_OK);
+		MessageBox(NULL, "設定に失敗", "Direct Input Error", MB_OK);
 		return false;
 	}
 
-	//	入力制御開始
+	// 入力制御開始
 	dinputDevice->Acquire();
 
 	return true;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

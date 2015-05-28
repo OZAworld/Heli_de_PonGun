@@ -19,17 +19,29 @@
     <Filter Include="Class\Light">
       <UniqueIdentifier>{d758e6f9-d68a-49c0-b778-21c55753329b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Class\Model">
-      <UniqueIdentifier>{fd2eac13-57ff-4e8e-bc54-02933631c637}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Class\Texture">
-      <UniqueIdentifier>{349c76f3-2491-4cec-912f-3936e35667a7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Class\Graphic">
       <UniqueIdentifier>{e69d1f58-3a74-4ae9-a685-91a5871ea485}</UniqueIdentifier>
     </Filter>
     <Filter Include="Class\Camera">
       <UniqueIdentifier>{7db01bbc-aec0-4e73-84a9-29904ca353e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Graphic\Model">
+      <UniqueIdentifier>{fd2eac13-57ff-4e8e-bc54-02933631c637}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Graphic\Texture">
+      <UniqueIdentifier>{349c76f3-2491-4cec-912f-3936e35667a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Player">
+      <UniqueIdentifier>{c2b723b3-0d6a-4fcc-9b62-822b8c441ec2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Stage">
+      <UniqueIdentifier>{df98f11b-f306-4bda-b906-0fed4ba1ce1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Bullet">
+      <UniqueIdentifier>{0655ad3f-307a-4ad2-8806-6a2c579f44a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Enemy">
+      <UniqueIdentifier>{f61bf250-2e04-4996-b114-003b53e3cc66}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -49,7 +61,7 @@
       <Filter>Class\Light</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Class\Texture</Filter>
+      <Filter>Class\Graphic\Texture</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Class\Camera</Filter>
@@ -58,7 +70,19 @@
       <Filter>Class\Graphic</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
-      <Filter>Class\Model</Filter>
+      <Filter>Class\Graphic\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Class\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Stage.h">
+      <Filter>Class\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Class\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Class\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -78,7 +102,7 @@
       <Filter>Class\Light</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
-      <Filter>Class\Texture</Filter>
+      <Filter>Class\Graphic\Texture</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Class\Camera</Filter>
@@ -87,7 +111,19 @@
       <Filter>Class\Graphic</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
-      <Filter>Class\Model</Filter>
+      <Filter>Class\Graphic\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Class\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Stage.cpp">
+      <Filter>Class\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Class\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Class\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

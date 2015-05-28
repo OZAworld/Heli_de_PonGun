@@ -31,6 +31,8 @@ Graphic::Graphic()
 		DEFAULT_PITCH || FF_DONTCARE,	//フォントのピッチとファミリ
 		"",							//フォントの書体
 		&font);
+
+	D3DXMatrixIdentity(&m_world);
 }
 
 // デストラクタ
@@ -43,11 +45,10 @@ Graphic::~Graphic()
 // 3Dモデルを描画する
 void Graphic::DrawModel(D3DXVECTOR3 &position, D3DXVECTOR3 &rotation, D3DXVECTOR3 &scale, Model &model)
 {
-	std::unique_ptr<D3DXMATRIX> m_world(new D3DXMATRIX());
 
 	// ワールド行列の設定
-	TransForm(position, rotation, scale, m_world.get());
-	d3dDevice->SetTransform(D3DTS_WORLD, m_world.get());
+	TransForm(position, rotation, scale);
+	d3dDevice->SetTransform(D3DTS_WORLD, &m_world);
 
 	d3dDevice->SetTexture(0, nullptr);
 
@@ -66,13 +67,17 @@ void Graphic::DrawModel(D3DXVECTOR3 &position, D3DXVECTOR3 &rotation, D3DXVECTOR
 // 3Dモデルを描画する
 void Graphic::DrawModelTexture(D3DXVECTOR3 &position, D3DXVECTOR3 &rotation, D3DXVECTOR3 &scale, Model &model, Texture &texture)
 {
-	std::unique_ptr<D3DXMATRIX> m_world(new D3DXMATRIX());
-
 	// ワールド行列の設定
-	TransForm(position, rotation, scale, m_world.get());
-	d3dDevice->SetTransform(D3DTS_WORLD, m_world.get());
+	TransForm(position, rotation, scale);
+	d3dDevice->SetTransform(D3DTS_WORLD, &m_world);
 
 	d3dDevice->SetTexture(0, texture.texture);
+
+	//アルファブレンディングを行う
+	d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+	d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+	d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+
 
 	// モデルの描画
 	D3DXMATERIAL *materials = (D3DXMATERIAL *)model.buffer->GetBufferPointer();
@@ -81,9 +86,13 @@ void Graphic::DrawModelTexture(D3DXVECTOR3 &position, D3DXVECTOR3 &rotation, D3D
 		// マテリアルの設定
 		d3dDevice->SetMaterial(&materials[i].MatD3D);
 
+
 		// 分割されたメッシュの描画
 		model.mesh->DrawSubset(i);
 	}
+	//アルファブレンドを終わらせる
+	d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
+
 }
 
 // ポイントスプライトを描画する
@@ -113,12 +122,19 @@ void Graphic::DrawPointSprite(Vertex3 point[], int numPoint, Texture &texture)
 	D3DXMatrixIdentity(&m_world);
 	d3dDevice->SetTransform(D3DTS_WORLD, &m_world);
 
+	//アルファブレンディングを行う
+	d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+	d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 	// ポイントスプライトの描画
-	d3dDevice->SetRenderState(D3DRS_ZENABLE, false);	// Z比較を行わない
+	d3dDevice->SetRenderState(D3DRS_ZENABLE, true);	// Z比較を行わない
 	d3dDevice->SetStreamSource(0, pointBuffer, 0, sizeof(Vertex3));
 	d3dDevice->SetFVF(VERTEX3_FVF);
 	d3dDevice->DrawPrimitive(D3DPT_POINTLIST, 0, numPoint);
 	d3dDevice->SetRenderState(D3DRS_ZENABLE, true);		// Z比較を行う
+
+	//アルファブレンドを終わらせる
+	d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
 }
 
 // 文字列の描画
@@ -133,21 +149,23 @@ void Graphic::DrawString(RECT rect, const TCHAR *str)
 }
 
 // 座標変換
-void Graphic::TransForm(D3DXVECTOR3 &position, D3DXVECTOR3 &rotation, D3DXVECTOR3 &scale, D3DXMATRIX *m_world)
+void Graphic::TransForm(D3DXVECTOR3 &position, D3DXVECTOR3 &rotation, D3DXVECTOR3 &scale)
 {
 	D3DXMATRIX m_temp;
-	D3DXMatrixIdentity(m_world);
+	D3DXMatrixIdentity(&m_world);
 	D3DXMatrixIdentity(&m_temp);
 
 	// 行列を拡大縮小する
 	D3DXMatrixScaling(&m_temp, scale.x, scale.y, scale.z);
-	*m_world *= m_temp;
+	m_world *= m_temp;
 
 	// 行列を回転する
 	D3DXMatrixRotationYawPitchRoll(&m_temp, rotation.y, rotation.x, rotation.z);
-	*m_world *= m_temp;
+	m_world *= m_temp;
 
 	// 行列を平行移動させる
 	D3DXMatrixTranslation(&m_temp, position.x, position.y, position.z);
-	*m_world *= m_temp;
+	m_world *= m_temp;
 }
+
+

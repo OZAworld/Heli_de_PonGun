@@ -28,6 +28,8 @@ private:
 	// フォント
 	LPD3DXFONT font;
 
+	//	ワールド行列
+	D3DXMATRIX m_world;
 public:
 
 	// デフォルトコンストラクタ
@@ -49,6 +51,5 @@ public:
 private:
 
 	// 座標変換
-	void TransForm(D3DXVECTOR3 &position, D3DXVECTOR3 &rotation, D3DXVECTOR3 &scale, D3DXMATRIX *m_world);
-
+	void TransForm(D3DXVECTOR3 &position, D3DXVECTOR3 &rotation, D3DXVECTOR3 &scale);
 };
