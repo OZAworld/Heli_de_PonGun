@@ -12,7 +12,7 @@ Bullet::Bullet()
 	for (int i = 0; i < BULLET_MAX; i++)
 	{
 		bulletPoint[i].deathCount = 0;
-		bulletPoint[i].pos = D3DXVECTOR3(0, 0, 0);
+		//bulletPoint[i].pos = D3DXVECTOR3(0, 0, 0);
 		bulletPoint[i].exist = TRUE;
 	}
 	texture = new Texture("Texture/ball.bmp");

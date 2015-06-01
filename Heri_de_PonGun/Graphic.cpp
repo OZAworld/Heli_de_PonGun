@@ -75,7 +75,7 @@ void Graphic::DrawModelTexture(D3DXVECTOR3 &position, D3DXVECTOR3 &rotation, D3D
 
 	//アルファブレンディングを行う
 	d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
-	d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+	d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 
 
@@ -95,7 +95,7 @@ void Graphic::DrawModelTexture(D3DXVECTOR3 &position, D3DXVECTOR3 &rotation, D3D
 
 }
 
-// ポイントスプライトを描画する
+// ポイントスプライトを描画する アルファブレンドOFF
 void Graphic::DrawPointSprite(Vertex3 point[], int numPoint, Texture &texture)
 {
 	Vertex3 *vertex;
@@ -128,6 +128,48 @@ void Graphic::DrawPointSprite(Vertex3 point[], int numPoint, Texture &texture)
 	d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 	// ポイントスプライトの描画
 	d3dDevice->SetRenderState(D3DRS_ZENABLE, true);	// Z比較を行わない
+	d3dDevice->SetStreamSource(0, pointBuffer, 0, sizeof(Vertex3));
+	d3dDevice->SetFVF(VERTEX3_FVF);
+	d3dDevice->DrawPrimitive(D3DPT_POINTLIST, 0, numPoint);
+	d3dDevice->SetRenderState(D3DRS_ZENABLE, true);		// Z比較を行う
+
+	//アルファブレンドを終わらせる
+	d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
+}
+
+// ポイントスプライトを描画する アルファブレンドON
+void Graphic::DrawPointSprite_A(Vertex3 point[], int numPoint, Texture &texture, bool alpha)
+{
+	Vertex3 *vertex;
+
+	pointBuffer->Lock(0, 0, (LPVOID*)&vertex, 0);
+	for (int i = 0; i < numPoint; i++)
+	{
+		// ポイントスプライトの位置の計算
+		vertex[i].pos = point[i].pos;
+
+		// ポイントスプライトのサイズを設定
+		vertex[i].size = point[i].size;
+
+		// ポイントスプライトの色を設定
+		vertex[i].color = point[i].color;
+	}
+	pointBuffer->Unlock();
+
+	// テクスチャをパイプラインにセット
+	d3dDevice->SetTexture(0, texture.texture);
+
+	// ワールド変換マトリックスをパイプラインにセット
+	D3DXMATRIX m_world;
+	D3DXMatrixIdentity(&m_world);
+	d3dDevice->SetTransform(D3DTS_WORLD, &m_world);
+
+	//アルファブレンディングを行う
+	d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+	d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+	// ポイントスプライトの描画
+	d3dDevice->SetRenderState(D3DRS_ZENABLE, alpha);	// Z比較を行わない
 	d3dDevice->SetStreamSource(0, pointBuffer, 0, sizeof(Vertex3));
 	d3dDevice->SetFVF(VERTEX3_FVF);
 	d3dDevice->DrawPrimitive(D3DPT_POINTLIST, 0, numPoint);

@@ -44,6 +44,7 @@ public:
 
 	// ポイントスプライトを描画する
 	void DrawPointSprite(Vertex3 point[], int numPoint, Texture &texture);
+	void DrawPointSprite_A(Vertex3 point[], int numPoint, Texture &texture, bool alpha);
 
 	// 文字列の描画
 	void DrawString(RECT rect, const TCHAR *str);

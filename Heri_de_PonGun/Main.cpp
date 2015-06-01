@@ -49,6 +49,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int cmdShow)
 		//-----------------------
 		enemy->Draw();
 		enemy->Move();
+		enemy->Hit();
 
 		//-----------------------
 		//	ステージ

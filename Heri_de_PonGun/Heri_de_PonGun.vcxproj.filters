@@ -37,11 +37,20 @@
     <Filter Include="Class\Stage">
       <UniqueIdentifier>{df98f11b-f306-4bda-b906-0fed4ba1ce1b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Class\Bullet">
-      <UniqueIdentifier>{0655ad3f-307a-4ad2-8806-6a2c579f44a4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Class\Enemy">
       <UniqueIdentifier>{f61bf250-2e04-4996-b114-003b53e3cc66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Shot">
+      <UniqueIdentifier>{3c6bf919-9810-4a1b-a4cf-76e299a63a27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Shot\Bullet">
+      <UniqueIdentifier>{0655ad3f-307a-4ad2-8806-6a2c579f44a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Shot\Razer">
+      <UniqueIdentifier>{9f0a79fd-0ae5-488a-976b-d7973eaae756}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class\Shot\Bomb">
+      <UniqueIdentifier>{d8a54808-b988-48ee-9d7c-dfd033b8ba6a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -79,10 +88,16 @@
       <Filter>Class\Stage</Filter>
     </ClInclude>
     <ClInclude Include="Bullet.h">
-      <Filter>Class\Bullet</Filter>
+      <Filter>Class\Shot\Bullet</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>Class\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Bomb.h">
+      <Filter>Class\Shot\Bomb</Filter>
+    </ClInclude>
+    <ClInclude Include="Razer.h">
+      <Filter>Class\Shot\Razer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -120,10 +135,16 @@
       <Filter>Class\Stage</Filter>
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
-      <Filter>Class\Bullet</Filter>
+      <Filter>Class\Shot\Bullet</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>Class\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Bomb.cpp">
+      <Filter>Class\Shot\Bomb</Filter>
+    </ClCompile>
+    <ClCompile Include="Razer.cpp">
+      <Filter>Class\Shot\Razer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

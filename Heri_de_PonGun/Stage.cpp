@@ -39,8 +39,8 @@ void Stage::Move()
 
 void Stage::initStage()
 {
-	MinRange = D3DXVECTOR3(-250, 0, -250);
-	MaxRange = D3DXVECTOR3(250, 10, 250);
+	MinRange = D3DXVECTOR3(750, 0, 750);
+	MaxRange = D3DXVECTOR3(1250, 10, 1250);
 
 	D3DXVECTOR3 range = MaxRange - MinRange;
 
@@ -55,6 +55,9 @@ void Stage::View()
 {
 	//	プレイヤーの座標を取得
 	extern D3DXVECTOR3 inputState;
+
+	MinRange = D3DXVECTOR3(-250, 0, -250);
+	MaxRange = D3DXVECTOR3(250, 10, 250);
 
 	Vertex3 *vertex = new Vertex3[BUBBLE_MAX];
 	D3DXVECTOR3 range = MaxRange - MinRange;
